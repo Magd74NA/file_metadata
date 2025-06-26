@@ -1,5 +1,5 @@
 -module(gleam_erlang_file_ffi).
-
+-include_lib("file.hrl").
 -export([file_info/1]).
 
 
@@ -77,24 +77,24 @@
 file_info(Filename) ->
     file_info_result(file:read_file_info(Filename, [{time, posix}])).
 
-file_info_result(Result) ->
-    case Result of
-        {ok,
-         {file_info,
-          Size,
-          _Type,
-          _Access,
-          Atime,
-          Mtime,
-          Ctime,
-          Mode,
-          Links,
-          MajorDevice,
-          _MinorDevice,
-          Inode,
-          Uid,
-          Gid}} ->
-            {ok, {file_info, Size, Mode, Links, Inode, Uid, Gid, MajorDevice, Atime, Mtime, Ctime}};
-        {error, Reason} when ?is_posix_error(Reason) ->
-            Result
-    end.
+    file_info_result(Result) ->
+        case Result of
+            {ok,
+             #file_info{
+              size = Size,
+              type = _Type,
+              access = _Access,
+              atime = Atime,
+              mtime = Mtime,
+              ctime = Ctime,
+              mode = Mode,
+              links = Links,
+              major_device = MajorDevice,
+              minor_device = _MinorDevice,
+              inode = Inode,
+              uid = Uid,
+              gid = Gid}} ->
+                {ok, {file_info, Size, Mode, Links, Inode, Uid, Gid, MajorDevice, Atime, Mtime, Ctime}};
+            {error, Reason} when ?is_posix_error(Reason) ->
+                Result
+        end.
