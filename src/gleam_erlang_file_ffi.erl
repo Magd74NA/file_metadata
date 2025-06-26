@@ -79,22 +79,8 @@ file_info(Filename) ->
 
     file_info_result(Result) ->
         case Result of
-            {ok,
-             #file_info{
-              size = Size,
-              type = _Type,
-              access = _Access,
-              atime = Atime,
-              mtime = Mtime,
-              ctime = Ctime,
-              mode = Mode,
-              links = Links,
-              major_device = MajorDevice,
-              minor_device = _MinorDevice,
-              inode = Inode,
-              uid = Uid,
-              gid = Gid}} ->
-                {ok, {file_info, Size, Mode, Links, Inode, Uid, Gid, MajorDevice, Atime, Mtime, Ctime}};
+            {ok, FileInfo} when is_record(FileInfo, file_info) ->
+                {ok, FileInfo};
             {error, Reason} when ?is_posix_error(Reason) ->
-                Result
+                {error, Reason}  
         end.
